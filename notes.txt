@@ -1,0 +1,19 @@
+
+--------- 1 operacja na  pliku
+
+2 obsługa formularza jesli strona istnieje
+2,5  if page exists/ Twoja prośba została przesłana
+
+--------- 3 filtrowanie pod kazdą ze stron (warunki do ifów))
+
+--------- 4 set na kazdej liscie aby unikac duplikatow  potem extend na glownej
+
+5 sleep na wait until loaded
+
+--------- 6 słownik link oraz VIN
+
+--------- 7 druga lista na grafiki
+
+8 dodawanie zgłoszeń do grafik
+
+--------- 9 vin - upper href upper

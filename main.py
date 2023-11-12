@@ -1,4 +1,6 @@
+import ipdb
 import openpyxl
+import logging
 from prompt_toolkit.mouse_events import MouseButton
 from selenium import webdriver
 import undetected_chromedriver as uc
@@ -6,6 +8,7 @@ from selenium.common import ElementNotInteractableException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains, Keys
+from selenium.webdriver.support.wait import WebDriverWait
 from time import sleep
 
 from config import username, password, FILE_PATH
@@ -19,7 +22,10 @@ from locators import (
     button_new_block_request_xpath,
     input_block_address_xpath,
     button_send_block_request,
-    all_results_xpath, page_exists_block_address_xpath, image_tab_xpath, google_image_link_link_input_id,
+    all_results_xpath,
+    page_exists_block_address_xpath,
+    image_tab_xpath,
+    google_image_link_link_input_id,
     google_image_link_radio_button_id,
 )
 
@@ -29,15 +35,35 @@ BLUE_VIN = "2C3CDZBT5LH210515"
 PAGES_LINKS = []
 # IMAGES_LINKS = []
 IMAGES_LINKS = [
-    {'link': 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fimg.plc.ua%2Ffull%2Fimg3%2F01%2F2019%2F18%2F94%2F47021efb9dcf9777d32fe81247600110%2Fa9aa13e00739476eb71342ee5abd5efd_hrs.jpg&tbnid=fhLVI24UBKjAjM&vet=12ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygBegQIARBK..i&imgrefurl=https%3A%2F%2Fplc.ua%2Fen%2Fauctions%2Flot%2Fdodge-challenger-2019-vin-2c3cdzl93kh606802-1-63715472%2F&docid=UahM0ynIUhxnrM&w=1280&h=960&itg=1&q=2C3CDZL93KH606802&hl=pl&ved=2ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygBegQIARBK', 'vin': '2C3CDZL93KH606802'},
-    {'link': 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fcs.copart.com%2Fv1%2FAUTH_svc.pdoc00001%2FLPP447%2Ffc7255d9541d4fc1b7b44891f387b965_ful.jpg&tbnid=i27yn30mzpvLTM&vet=12ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygCegQIARBM..i&imgrefurl=https%3A%2F%2Fucars.pro%2Flot%2F127451736-2019-dodge-challenger-srt-hellcat-redeye-2c3cdzl93kh606802&docid=w094uwGjQAb7UM&w=640&h=480&itg=1&q=2C3CDZL93KH606802&hl=pl&ved=2ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygCegQIARBM', 'vin': '2C3CDZL93KH606802'},
+    {
+        "link": "https://www.google.com/imgres?imgurl=https%3A%2F%2Fimg.plc.ua%2Ffull%2Fimg3%2F01%2F2019%2F18%2F94%2F47021efb9dcf9777d32fe81247600110%2Fa9aa13e00739476eb71342ee5abd5efd_hrs.jpg&tbnid=fhLVI24UBKjAjM&vet=12ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygBegQIARBK..i&imgrefurl=https%3A%2F%2Fplc.ua%2Fen%2Fauctions%2Flot%2Fdodge-challenger-2019-vin-2c3cdzl93kh606802-1-63715472%2F&docid=UahM0ynIUhxnrM&w=1280&h=960&itg=1&q=2C3CDZL93KH606802&hl=pl&ved=2ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygBegQIARBK",
+        "vin": "2C3CDZL93KH606802",
+    },
+    {
+        "link": "https://www.google.com/imgres?imgurl=https%3A%2F%2Fcs.copart.com%2Fv1%2FAUTH_svc.pdoc00001%2FLPP447%2Ffc7255d9541d4fc1b7b44891f387b965_ful.jpg&tbnid=i27yn30mzpvLTM&vet=12ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygCegQIARBM..i&imgrefurl=https%3A%2F%2Fucars.pro%2Flot%2F127451736-2019-dodge-challenger-srt-hellcat-redeye-2c3cdzl93kh606802&docid=w094uwGjQAb7UM&w=640&h=480&itg=1&q=2C3CDZL93KH606802&hl=pl&ved=2ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygCegQIARBM",
+        "vin": "2C3CDZL93KH606802",
+    },
     # {'link': 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fcs.copart.com%2Fv1%2FAUTH_svc.pdoc00001%2FLPP439%2Fd790388e83f349b68eddc92660e97be3_ful.jpg&tbnid=Q3dAohWUjUGaAM&vet=12ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygEegQIARBQ..i&imgrefurl=https%3A%2F%2Fucars.pro%2Flot%2F127451736-2019-dodge-challenger-srt-hellcat-redeye-2c3cdzl93kh606802&docid=w094uwGjQAb7UM&w=640&h=480&itg=1&q=2C3CDZL93KH606802&hl=pl&ved=2ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygEegQIARBQ', 'vin': '2C3CDZL93KH606802'},
     # {'link': 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fcs.copart.com%2Fv1%2FAUTH_svc.pdoc00001%2FLPP439%2Fb1b64fd4fd114438beb640f21be0a0c2_ful.jpg&tbnid=8h3MeYjw8FtHzM&vet=12ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygHegQIARBW..i&imgrefurl=https%3A%2F%2Fucars.pro%2Flot%2F127451736-2019-dodge-challenger-srt-hellcat-redeye-2c3cdzl93kh606802&docid=w094uwGjQAb7UM&w=640&h=480&itg=1&q=2C3CDZL93KH606802&hl=pl&ved=2ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygHegQIARBW', 'vin': '2C3CDZL93KH606802'}, {'link': 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fimg.plc.ua%2Ffull%2Fimg3%2F01%2F2019%2F18%2F94%2F47021efb9dcf9777d32fe81247600110%2F2c221f53b40148a7a5edaee5368c028a_hrs.jpg&tbnid=RXE0PhAjEs9yoM&vet=12ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygGegQIARBU..i&imgrefurl=https%3A%2F%2Fplc.ua%2Fen%2Fauctions%2Flot%2Fdodge-challenger-2019-vin-2c3cdzl93kh606802-1-63715472%2F&docid=UahM0ynIUhxnrM&w=1280&h=960&itg=1&q=2C3CDZL93KH606802&hl=pl&ved=2ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygGegQIARBU', 'vin': '2C3CDZL93KH606802'}, {'link': 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fimg.plc.ua%2Ffull%2Fimg3%2F01%2F2019%2F18%2F94%2Fb6e750be2696b84ce327f9103fc0052b%2Fd6d047cdaf2b40a092744014c30fce3f_hrs.jpg&tbnid=dcplpSvyjUO33M&vet=12ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygIegQIARBY..i&imgrefurl=https%3A%2F%2Fplc.ua%2Fen%2Fauctions%2Flot%2Fdodge-challenger-2019-vin-2c3cdzl93kh606802-1-63715472%2F&docid=UahM0ynIUhxnrM&w=1280&h=960&itg=1&q=2C3CDZL93KH606802&hl=pl&ved=2ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygIegQIARBY', 'vin': '2C3CDZL93KH606802'}, {'link': 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fimg.plc.ua%2Ffull%2Fimg3%2F01%2F2019%2F18%2F94%2F47021efb9dcf9777d32fe81247600110%2F3c89b4d1063a49869872a7bbfee638aa_hrs.jpg&tbnid=CzX2xXELicgEMM&vet=12ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygAegQIARBI..i&imgrefurl=https%3A%2F%2Fplc.ua%2Fen%2Fauctions%2Flot%2Fdodge-challenger-2019-vin-2c3cdzl93kh606802-1-63715472%2F&docid=UahM0ynIUhxnrM&w=1280&h=960&itg=1&q=2C3CDZL93KH606802&hl=pl&ved=2ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygAegQIARBI', 'vin': '2C3CDZL93KH606802'}, {'link': 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fimg.plc.ua%2Ffull%2Fimg3%2F01%2F2019%2F18%2F94%2F47021efb9dcf9777d32fe81247600110%2F0a471b95a91840c5a24b44e01dc4adae_hrs.jpg&tbnid=GhqEFyTKyoVxQM&vet=12ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygDegQIARBO..i&imgrefurl=https%3A%2F%2Fplc.ua%2Fen%2Fauctions%2Flot%2Fdodge-challenger-2019-vin-2c3cdzl93kh606802-1-63715472%2F&docid=UahM0ynIUhxnrM&w=1280&h=960&itg=1&q=2C3CDZL93KH606802&hl=pl&ved=2ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygDegQIARBO', 'vin': '2C3CDZL93KH606802'},
     # {'link': 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fcs.copart.com%2Fv1%2FAUTH_svc.pdoc00001%2FLPP439%2Fbb0df910e3934b0aab6e98c636ed5f8a_ful.jpg&tbnid=urFGGq-Phy_VCM&vet=12ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygJegQIARBa..i&imgrefurl=https%3A%2F%2Fucars.pro%2Flot%2F127451736-2019-dodge-challenger-srt-hellcat-redeye-2c3cdzl93kh606802&docid=w094uwGjQAb7UM&w=640&h=480&itg=1&q=2C3CDZL93KH606802&hl=pl&ved=2ahUKEwjYne6zjMaBAxUPDRAIHbZuA4UQMygJegQIARBa', 'vin': '2C3CDZL93KH606802'}
 ]
 
 VINS = []
-# VINS = ["2C3CDZBT5LH210515", "3CZRU6H75JM727661"]
+VINS = [
+    "WP1AB2A25FLA56998",
+    "WBA8B3C50GK383844",
+    "1C6RR7FT3HS755769",
+    "JTDKAMFP8M3182214",
+    "1C4RJFBG4JC273945",
+    "LYV102RKXKB263123",
+    "1FA6P8CF6K5186661",
+    "1C4RJFBG6KC841906",
+    "YV426MDB4F2590434",
+    "YV4162XZ7K2021323",
+    "1C4RJFBGXMC701005",
+]
+# VINS = ["1C6RR7FT3HS755769"]
+# VINS = ["WP1AB2A25FLA56998", "WBA8B3C50GK383844"]
 
 
 def load_vins():
@@ -52,25 +78,34 @@ def init_driver():
 
 
 def login(driver):
-    driver.get("https://www.google.com")
-    sleep(2)
-    driver.find_element(By.XPATH, google_approval_button).click()
-    driver.find_element(By.XPATH, login_button).click()
-    sleep(3)
-    driver.find_element(By.NAME, next_username_input_name).send_keys(username)
-    driver.find_element(By.XPATH, next_username_xpath).click()
-    sleep(5)
-    driver.find_element(By.NAME, password_input_name).send_keys(password)
-    driver.find_element(By.ID, password_next_button).click()
-    sleep(3)
+    try:
+        driver.get("https://www.google.com")
+        WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, google_approval_button)).click()
+        WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, login_button)).click()
+        user_name_input_element = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.NAME, next_username_input_name))
+        user_name_input_element.send_keys(username)
+        WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, next_username_xpath)).click()
+        password_input_name_element = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.NAME, password_input_name))
+        password_input_name_element.send_keys(password)
+        WebDriverWait(driver, 10).until(lambda d: d.find_element(By.ID, password_next_button)).click()
+    except Exception as e:
+        ipdb.set_trace()
+        logging.error(e)
+
+
 
 
 def first_search(driver):
-    sleep(2)
-    search_textarea = driver.find_elements(By.TAG_NAME, "textarea")[0]
-    search_textarea.send_keys("Dodge Challenger")
-    search_textarea.submit()
-
+    try:
+        sleep(2)
+        search_textarea = WebDriverWait(driver, 10).until(
+            lambda d: d.find_element(By.TAG_NAME, "textarea")[0])
+        # search_textarea = driver.find_elements(By.TAG_NAME, "textarea")[0]
+        search_textarea.send_keys("Dodge Challenger")
+        search_textarea.submit()
+    except Exception as e:
+        ipdb.set_trace()
+        logging.error(e)
 
 def links_scrapper(driver, vin):
     links = []
@@ -106,6 +141,7 @@ def images_scrapper(driver, vin):
     driver.find_element(By.XPATH, '//span[text()="Grafika"]').click()  # zmienić link
     action = ActionChains(driver)
     sleep(2)
+    sleep(60)  # remove
     las = driver.find_elements(By.TAG_NAME, "img")
 
     for index, la in enumerate(las[10:]):
@@ -136,84 +172,153 @@ def images_scrapper(driver, vin):
                 links.append(href)
 
     links = list(set(links))
-    list_dict = [{"link": l, "vin": vin} for l in links]
+    list_dict = [{"image": True, "link": l, "vin": vin} for l in links]
     print(list_dict)
     IMAGES_LINKS.extend(list_dict)
 
 
 def block_pages_request(driver, links):
     vin = ""
+    import ipdb
+
+    ipdb.set_trace()
     # lopp over dictionary
     for link in links:
-        driver.get("https://search.google.com/search-console/remove-outdated-content")
-        driver.find_element(By.XPATH, button_new_block_request_xpath).click()
-        input_block_address = driver.find_element(By.XPATH, input_block_address_xpath)
-        input_block_address.send_keys(link)
-        driver.find_element(By.XPATH, button_send_block_request).click()
+        try:
+            driver.get(
+                "https://search.google.com/search-console/remove-outdated-content"
+            )
+            driver.find_element(By.XPATH, button_new_block_request_xpath).click()
+            input_block_address = driver.find_element(
+                By.XPATH, input_block_address_xpath
+            )
+            input_block_address.send_keys(link["link"])
+            # input_block_address.send_keys(link)  # zły link do odtworzenia sytuacji i zabezpieczenia NoSuchElementException
+            driver.find_element(By.XPATH, button_send_block_request).click()
 
-        import ipdb
+            driver.find_element(By.XPATH, page_exists_block_address_xpath).send_keys(
+                link["vin"]
+            )
+            action = ActionChains(driver)
+            action.send_keys(Keys.ESCAPE)
+            driver.find_element(By.XPATH, '//span[text()="Prześlij prośbę"]').click()
+        except Exception:
+            import ipdb
 
-        ipdb.set_trace()
-        driver.find_element(
-            By.XPATH, page_exists_block_address_xpath
-        ).send_keys(vin)
-        action = ActionChains(driver)
-        action.send_keys(Keys.ESCAPE)
-        driver.find_element(By.XPATH, '//span[text()="Prześlij prośbę"]').click()
+            ipdb.set_trace()
+
 
 def block_images_request(driver, links):
     # driver.find_element(By.XPATH, button_new_block_request_xpath).click()
-    for link in links:
-        import ipdb;
-        driver.get("https://search.google.com/search-console/remove-outdated-content")
-        ipdb.set_trace()
-        sleep(2)
-        driver.find_element(By.XPATH, button_new_block_request_xpath).click()
-        driver.find_element(By.XPATH, image_tab_xpath).click()
-        driver.find_element(By.ID, google_image_link_radio_button_id).click()
-        input_block_image = driver.find_element(By.ID, google_image_link_link_input_id)
-        input_block_image.send_keys(link["link"])
-
-        driver.find_element(By.XPATH, '//span[text()="Prześlij prośbę"]').click()
-        try:
-            print(link)
+    try:
+        for link in links:
+            driver.get(
+                "https://search.google.com/search-console/remove-outdated-content"
+            )
             sleep(2)
-            # driver.find_element(By.XPATH,'//*[@id="lblTad"]/span[3]').click()
-            driver.find_element(By.XPATH, '//span[text()="Grafika"]').click()
-            driver.find_element(By.XPATH, button_send_block_request).click()
+            driver.find_element(By.XPATH, button_new_block_request_xpath).click()
+            driver.find_element(By.XPATH, image_tab_xpath).click()
+            driver.find_element(By.ID, google_image_link_radio_button_id).click()
+            input_block_image = driver.find_element(
+                By.ID, google_image_link_link_input_id
+            )
+            input_block_image.send_keys(link["link"])
 
-        # from selenium.webdriver.support.wait import WebDriverWait
-        # from selenium.webdriver.support import expected_conditions as EC
-        # WebDriverWait(driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH, "//iframe")))
-        # WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//span[text()="Grafika"]'))).click()
+            driver.find_element(By.XPATH, '//span[text()="Prześlij prośbę"]').click()
+            try:
+                print(link)
+                sleep(2)
+                # driver.find_element(By.XPATH,'//*[@id="lblTad"]/span[3]').click()
+                driver.find_element(By.XPATH, '//span[text()="Grafika"]').click()
+                driver.find_element(By.XPATH, button_send_block_request).click()
 
-        # WebDriverWait(driver, 5).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH, '//span[text()="Grafika"]')))
+            # from selenium.webdriver.support.wait import WebDriverWait
+            # from selenium.webdriver.support import expected_conditions as EC
+            # WebDriverWait(driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH, "//iframe")))
+            # WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//span[text()="Grafika"]'))).click()
 
-        except:
-            import ipdb; ipdb.set_trace()
-        dd.send_keys(link)
-    # button_image_block_request = '//span[text()="Grafika"]'
-    # input_block_address = driver.find_element(By.XPATH, button_image_block_request)
+            # WebDriverWait(driver, 5).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH, '//span[text()="Grafika"]')))
+
+            except:
+                import ipdb
+
+                ipdb.set_trace()
+            # dd.send_keys(link)
+        # button_image_block_request = '//span[text()="Grafika"]'
+        # input_block_address = driver.find_element(By.XPATH, button_image_block_request)
+    except Exception:
+        import ipdb
+
+        ipdb.set_trace()
 
     pass
 
 
 def back_to_all_results(driver):
-    driver.execute_script("window.scrollTo(0, 0);")
-    sleep(0.5)
-    driver.find_element(By.XPATH, all_results_xpath).click()
+    try:
+        driver.execute_script("window.scrollTo(0, 0);")
+        sleep(0.5)
+        driver.find_element(By.XPATH, all_results_xpath).click()
+    except Exception:
+        import ipdb
+
+        ipdb.set_trace()
 
 
 if __name__ == "__main__":
     # load_vins()
-    driver = init_driver()
-    login(driver)
-    first_search(driver)
-    #
-    # for vin in VINS:
-    #     links_scrapper(driver, vin)
-    #     images_scrapper(driver, vin)
-    #     back_to_all_results(driver)
-    # block_pages_request(driver, PAGES_LINKS)
-    block_images_request(driver, IMAGES_LINKS)
+    try:
+        driver = init_driver()
+    except Exception:
+        import ipdb
+
+        ipdb.set_trace()
+
+    try:
+        login(driver)
+    except Exception:
+        import ipdb
+
+        ipdb.set_trace()
+
+    try:
+        first_search(driver)
+    except Exception:
+        import ipdb
+
+        ipdb.set_trace()
+
+    for vin in VINS:
+        try:
+            links_scrapper(driver, vin)
+        except Exception:
+            import ipdb
+
+            ipdb.set_trace()
+
+        try:
+            images_scrapper(driver, vin)
+        except Exception:
+            import ipdb
+
+            ipdb.set_trace()
+
+        try:
+            back_to_all_results(driver)
+        except Exception:
+            import ipdb
+
+            ipdb.set_trace()
+
+    # try:
+    #     block_pages_request(driver, PAGES_LINKS)
+    # except Exception:
+    #     import ipdb
+    #     ipdb.set_trace()
+    # try:
+    # block_images_request(driver, IMAGES_LINKS)
+    # except Exception:
+    #     import ipdb
+    #     ipdb.set_trace()
+
     driver.quit()

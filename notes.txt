@@ -17,3 +17,24 @@
 8 dodawanie zgłoszeń do grafik
 
 --------- 9 vin - upper href upper
+
+10 obsługa błędów
+11 obsługa nie teraz po logowaniu
+12 logger python
+
+
+
+
+https://bid.cars/ru/lot/0-37516444/2017-RAM-1500-1C6RR7FT3HS755769
+https://bid.cars/en/lot/0-37516444/2017-RAM-1500-1C6RR7FT3HS755769
+https://www.google.com/imgres?imgurl=https%3A%2F%2Fimages.bid.cars%2F37516444_6538dd59a2341%2F2017-RAM-1500-1C6RR7FT3HS755769-5.jpg&tbnid=-AIlIQW9vS9ksM&vet=12ahUKEwjCwt_j4buCAxXJNOwKHXajAyMQMygEegQIARA7..i&imgrefurl=https%3A%2F%2Fbid.cars%2Fru%2Flot%2F0-37516444%2F2017-RAM-1500-1C6RR7FT3HS755769&docid=DC827DgqW3VYnM&w=640&h=466&itg=1&q=1C6RR7FT3HS755769&ved=2ahUKEwjCwt_j4buCAxXJNOwKHXajAyMQMygEegQIARA7
+https://www.google.com/imgres?imgurl=https%3A%2F%2Fimages.bid.cars%2F37516444_6538dd59a2341%2F2017-RAM-1500-1C6RR7FT3HS755769-9.jpg&tbnid=Wj_W1OW955KPxM&vet=12ahUKEwjCwt_j4buCAxXJNOwKHXajAyMQMygFegQIARA9..i&imgrefurl=https%3A%2F%2Fbid.cars%2Fru%2Flot%2F0-37516444%2F2017-RAM-1500-1C6RR7FT3HS755769&docid=DC827DgqW3VYnM&w=640&h=466&itg=1&q=1C6RR7FT3HS755769&ved=2ahUKEwjCwt_j4buCAxXJNOwKHXajAyMQMygFegQIARA9
+https://www.google.com/imgres?imgurl=https%3A%2F%2Fimages.bid.cars%2F37516444_6538dd59a2341%2F2017-RAM-1500-1C6RR7FT3HS755769-7.jpg&tbnid=DYQfmbY2Q2bmTM&vet=12ahUKEwjCwt_j4buCAxXJNOwKHXajAyMQMygKegQIARBH..i&imgrefurl=https%3A%2F%2Fbid.cars%2Fru%2Flot%2F0-37516444%2F2017-RAM-1500-1C6RR7FT3HS755769&docid=DC827DgqW3VYnM&w=640&h=466&itg=1&q=1C6RR7FT3HS755769&ved=2ahUKEwjCwt_j4buCAxXJNOwKHXajAyMQMygKegQIARBH
+https://www.google.com/imgres?imgurl=https%3A%2F%2Fimages.bid.cars%2F37516444_6538dd59a2341%2F2017-RAM-1500-1C6RR7FT3HS755769-6.jpg&tbnid=cktzjZCkF62HzM&vet=12ahUKEwjCwt_j4buCAxXJNOwKHXajAyMQMygDegQIARA5..i&imgrefurl=https%3A%2F%2Fbid.cars%2Fru%2Flot%2F0-37516444%2F2017-RAM-1500-1C6RR7FT3HS755769&docid=DC827DgqW3VYnM&w=640&h=466&itg=1&q=1C6RR7FT3HS755769&ved=2ahUKEwjCwt_j4buCAxXJNOwKHXajAyMQMygDegQIARA5
+https://www.google.com/imgres?imgurl=https%3A%2F%2Fimages.bid.cars%2F37516444_6538dd59a2341%2F2017-RAM-1500-1C6RR7FT3HS755769-10.jpg&tbnid=e0QsXXmOasdFUM&vet=12ahUKEwjCwt_j4buCAxXJNOwKHXajAyMQMygGegQIARA_..i&imgrefurl=https%3A%2F%2Fbid.cars%2Fru%2Flot%2F0-37516444%2F2017-RAM-1500-1C6RR7FT3HS755769&docid=DC827DgqW3VYnM&w=640&h=466&itg=1&q=1C6RR7FT3HS755769&ved=2ahUKEwjCwt_j4buCAxXJNOwKHXajAyMQMygGegQIARA
+https://www.google.com/imgres?imgurl=https%3A%2F%2Fimages.bid.cars%2F37516444_6538dd59a2341%2F2017-RAM-1500-1C6RR7FT3HS755769-8.jpg&tbnid=lMlA4DsMLqbAgM&vet=12ahUKEwjCwt_j4buCAxXJNOwKHXajAyMQMygIegQIARBD..i&imgrefurl=https%3A%2F%2Fbid.cars%2Fru%2Flot%2F0-37516444%2F2017-RAM-1500-1C6RR7FT3HS755769&docid=DC827DgqW3VYnM&w=640&h=466&itg=1&q=1C6RR7FT3HS755769&ved=2ahUKEwjCwt_j4buCAxXJNOwKHXajAyMQMygIegQIARBD
+
+ERRORS
+coś poszło nie tak.png :
+<span jsname="V67aGc" class="VfPpkd-vQzf8d">Dalej</span>
+XPath   //*[@id="yDmH0d"]/c-wiz/div[2]/div[2]/div/div[2]/div/div/div/div/button/span

@@ -8,21 +8,29 @@
 
 --------- 4 set na kazdej liscie aby unikac duplikatow  potem extend na glownej
 
-5 sleep na wait until loaded
+--------- 5 sleep na wait until loaded
 
 --------- 6 słownik link oraz VIN
 
 --------- 7 druga lista na grafiki
 
-8 dodawanie zgłoszeń do grafik
+---------8 dodawanie zgłoszeń do grafik
 
 --------- 9 vin - upper href upper
 
 10 obsługa błędów
 11 obsługa nie teraz po logowaniu
-12 logger python
+12 logger python pilk z datą wysyłany na maila
+    12.1 bucket na logi
 
 
+13 przypadki nie przesłania adresu
+    1 zły link- nie link
+    2 nie ma linku 404
+    3 obsługa formularza jesli strona istnieje
+    +4 podaj zmianę
+
+15 tool do wysyłania raportów na mail z logami
 
 
 https://bid.cars/ru/lot/0-37516444/2017-RAM-1500-1C6RR7FT3HS755769
@@ -38,3 +46,37 @@ ERRORS
 coś poszło nie tak.png :
 <span jsname="V67aGc" class="VfPpkd-vQzf8d">Dalej</span>
 XPath   //*[@id="yDmH0d"]/c-wiz/div[2]/div[2]/div/div[2]/div/div/div/div/button/span
+
+
+
+
+[{'link': 'https://ucars.pro/pl/lot/439636963-2015-porsche-cayenne-s-wp1ab2a25fla56998', 'vin': 'WP1AB2A25FLA56998'}]
+[{'link': 'https://ucars.pro/lot/135578756-2016-bmw-340-i-wba8b3c50gk383844', 'vin': 'WBA8B3C50GK383844'}]
+[
+    {'link': 'https://bid.cars/en/lot/0-37516444/2017-RAM-1500-1C6RR7FT3HS755769', 'vin': '1C6RR7FT3HS755769'},
+    {'link': 'https://bid.cars/ru/lot/0-37516444/2017-RAM-1500-1C6RR7FT3HS755769', 'vin': '1C6RR7FT3HS755769'}
+]
+[{'link': 'https://ucars.pro/lot/135778476-2021-toyota-prius-prime-le-jtdkamfp8m3182214', 'vin': 'JTDKAMFP8M3182214'}]
+[
+    {'link': 'https://bid.cars/en/lot/1-70477833/2018-Jeep-Grand-Cherokee-1C4RJFBG4JC273945', 'vin': '1C4RJFBG4JC273945'},
+    {'link': 'https://ucars.pro/ar/lot/133877407-2018-jeep-grand-cherokee-limited-1c4rjfbg4jc273945', 'vin': '1C4RJFBG4JC273945'},
+    {'link': 'https://ucars.pro/lot/133877407-2018-jeep-grand-cherokee-limited-1c4rjfbg4jc273945', 'vin': '1C4RJFBG4JC273945'}
+]
+[
+    {'image_link': 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fimages.bid.cars%2F70477833_652eda4397916%2F2018-Jeep-Grand-Cherokee-1C4RJFBG4JC273945-6.jpg&tbnid=HcdDtrR9dBqfFM&vet=12ahUKEwiQm671qr6CAxXOu6QKHRd8BLsQMygFegQIARBO..i&imgrefurl=https%3A%2F%2Fbid.cars%2Fen%2Flot%2F1-70477833%2F2018-Jeep-Grand-Cherokee-1C4RJFBG4JC273945&docid=fjLoi3EFSk-s8M&w=640&h=480&q=1C4RJFBG4JC273945&hl=pl&ved=2ahUKEwiQm671qr6CAxXOu6QKHRd8BLsQMygFegQIARBO', 'vin': '1C4RJFBG4JC273945'},
+    {'image_link': 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fimages.bid.cars%2F70477833_652eda4397916%2F2018-Jeep-Grand-Cherokee-1C4RJFBG4JC273945-10.jpg&tbnid=Cwcg8BQm58HZEM&vet=12ahUKEwiQm671qr6CAxXOu6QKHRd8BLsQMygHegQIARBS..i&imgrefurl=https%3A%2F%2Fbid.cars%2Fen%2Flot%2F1-70477833%2F2018-Jeep-Grand-Cherokee-1C4RJFBG4JC273945&docid=fjLoi3EFSk-s8M&w=640&h=480&q=1C4RJFBG4JC273945&hl=pl&ved=2ahUKEwiQm671qr6CAxXOu6QKHRd8BLsQMygHegQIARBS', 'vin': '1C4RJFBG4JC273945'},
+    {'image_link': 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fimages.bid.cars%2F70477833_652eda4397916%2F2018-Jeep-Grand-Cherokee-1C4RJFBG4JC273945-7.jpg&tbnid=BzwNeHmhjI3-aM&vet=12ahUKEwiQm671qr6CAxXOu6QKHRd8BLsQMygGegQIARBQ..i&imgrefurl=https%3A%2F%2Fbid.cars%2Fen%2Flot%2F1-70477833%2F2018-Jeep-Grand-Cherokee-1C4RJFBG4JC273945&docid=fjLoi3EFSk-s8M&w=640&h=480&q=1C4RJFBG4JC273945&hl=pl&ved=2ahUKEwiQm671qr6CAxXOu6QKHRd8BLsQMygGegQIARBQ', 'vin': '1C4RJFBG4JC273945'},
+    {'image_link': 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fimages.bid.cars%2F70477833_652eda4397916%2F2018-Jeep-Grand-Cherokee-1C4RJFBG4JC273945-9.jpg&tbnid=TaoEUYx9IhXmkM&vet=12ahUKEwiQm671qr6CAxXOu6QKHRd8BLsQMygIegQIARBU..i&imgrefurl=https%3A%2F%2Fbid.cars%2Fen%2Flot%2F1-70477833%2F2018-Jeep-Grand-Cherokee-1C4RJFBG4JC273945&docid=fjLoi3EFSk-s8M&w=640&h=480&q=1C4RJFBG4JC273945&hl=pl&ved=2ahUKEwiQm671qr6CAxXOu6QKHRd8BLsQMygIegQIARBU', 'vin': '1C4RJFBG4JC273945'}
+]
+[{'link': 'https://ucars.pro/lot/471779273-2019-ford-mustang-gt-1fa6p8cf6k5186661', 'vin': '1FA6P8CF6K5186661'}]
+[{'link': 'https://ucars.pro/lot/413844373-2019-jeep-grand-cherokee-limited-1c4rjfbg6kc841906', 'vin': '1C4RJFBG6KC841906'}]
+[
+    {'link': 'https://bid.cars/en/lot/0-36811802/2015-Volvo-XC60-YV426MDB4F2590434', 'vin': 'YV426MDB4F2590434'},
+    {'link': 'https://ucars.pro/ar/lot/420811863-2015-volvo-xc60-t5-drive-e-premier-yv426mdb4f2590434', 'vin': 'YV426MDB4F2590434'},
+    {'link': 'https://plc.ua/auctions/lot/volvo-xc60-2015-vin-yv426mdb4f2590434-3-036811802/', 'vin': 'YV426MDB4F2590434'}]
+[
+    {'image_link': 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fimages.bid.cars%2F36811802_652e50a298133%2F2015-Volvo-XC60-YV426MDB4F2590434-4.jpg&tbnid=fn4jvI1p61U6_M&vet=12ahUKEwi_v421q76CAxVg3wIHHeCID_QQMygDegQIARA5..i&imgrefurl=https%3A%2F%2Fbid.cars%2Fru%2Flot%2F0-36811802%2F2015-Volvo-XC60-YV426MDB4F2590434&docid=Y7hO1JaM9GFOgM&w=640&h=466&q=YV426MDB4F2590434&hl=pl&ved=2ahUKEwi_v421q76CAxVg3wIHHeCID_QQMygDegQIARA5', 'vin': 'YV426MDB4F2590434'},
+    {'image_link': 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fimages.bid.cars%2F36811802_652e50a298133%2F2015-Volvo-XC60-YV426MDB4F2590434-10.jpg&tbnid=SKgmAldkwAT4yM&vet=12ahUKEwi_v421q76CAxVg3wIHHeCID_QQMygIegQIARBD..i&imgrefurl=https%3A%2F%2Fbid.cars%2Fru%2Flot%2F0-36811802%2F2015-Volvo-XC60-YV426MDB4F2590434&docid=Y7hO1JaM9GFOgM&w=640&h=466&q=YV426MDB4F2590434&hl=pl&ved=2ahUKEwi_v421q76CAxVg3wIHHeCID_QQMygIegQIARBD', 'vin': 'YV426MDB4F2590434'},
+    {'image_link': 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fimages.bid.cars%2F36811802_652e50a298133%2F2015-Volvo-XC60-YV426MDB4F2590434-8.jpg&tbnid=MuW2YlxDgMVZAM&vet=12ahUKEwi_v421q76CAxVg3wIHHeCID_QQMygGegQIARA_..i&imgrefurl=https%3A%2F%2Fbid.cars%2Fen%2Flot%2F0-36811802%2F2015-Volvo-XC60-YV426MDB4F2590434&docid=97S-4EN-cWx6RM&w=640&h=466&q=YV426MDB4F2590434&hl=pl&ved=2ahUKEwi_v421q76CAxVg3wIHHeCID_QQMygGegQIARA_', 'vin': 'YV426MDB4F2590434'
+]
+[{'link': 'https://ucars.pro/ar/lot/133089086-2019-volvo-xc40-t5-momentum-yv4162xz7k2021323', 'vin': 'YV4162XZ7K2021323'}]

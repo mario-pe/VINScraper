@@ -46,17 +46,7 @@ IMAGES_LINKS = []
 #     "1hd1jnv10eb023434",
 # ]
 VINS = [
-    "WP1AB2A25FLA56998",
-    "WBA8B3C50GK383844",
-    "1C6RR7FT3HS755769",
-    "JTDKAMFP8M3182214",
-    "1C4RJFBG4JC273945",
-    "LYV102RKXKB263123",
-    "1FA6P8CF6K5186661",
-    "1C4RJFBG6KC841906",
-    "YV426MDB4F2590434",
-    "YV4162XZ7K2021323",
-    "1C4RJFBGXMC701005",
+    "1hd1kef14mb640278"
 ]
 
 
@@ -145,7 +135,7 @@ def images_scrapper(driver, vin):
     las = driver.find_elements(By.TAG_NAME, "a")
     for index, la in enumerate(las):
         href = la.get_attribute("href")
-        if href and "imgres" in href:
+        if href:
             upper_href = href.upper()
             if "bid.cars".upper() in upper_href and f"-{vin.upper()}-" in upper_href:
                 links.append(href)
@@ -207,11 +197,13 @@ def block_pages_request(driver, links):
 def block_images_request(driver, links):
     # driver.find_element(By.XPATH, button_new_block_request_xpath).click()
         for link in links:
-            print(link["link"], link["vin"])
-            driver.get(
-                "https://search.google.com/search-console/remove-outdated-content"
-            )
+            print(link["image_link"], link["vin"])
+            # driver.get(
+            #     "https://search.google.com/search-console/remove-outdated-content"
+            # )
             driver.get(REMOVE_CONTENT_URL)
+            import ipdb;
+            ipdb.set_trace()
             button_new_block_request_element = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, button_new_block_request_xpath))
             button_new_block_request_element.click()
 
@@ -224,11 +216,17 @@ def block_images_request(driver, links):
             print(f" link zdjecia  -----------   {link['image_link']}")
             input_block_image.send_keys(link["image_link"])
             driver.find_element(By.XPATH, button_send_block).click()
-
             try:
                 sleep(1)
-                request_send_correctly_button = WebDriverWait(driver, 2).until(lambda d: d.find_element(By.XPATH, request_send_correctly))
+                request_send_correctly_button = WebDriverWait(driver, 2).until(
+                    lambda d: d.find_element(By.XPATH, request_send_correctly))
                 request_send_correctly_button.click()
+            except Exception:
+                pass
+            try:
+                page_exists_block_address_button = WebDriverWait(driver, 3).until(
+                    lambda d: d.find_element(By.XPATH, page_exists_block_address_xpath))
+                page_exists_block_address_button.send_keys(link["vin"])
             except Exception as e:
                 print(f"Exception  --------------------- block_images_request")
                 driver.find_element(By.XPATH, '//span[text()="Prześlij prośbę"]').click()
@@ -264,11 +262,13 @@ if __name__ == "__main__":
         page_links = links_scrapper(driver, vin)
         print(f"_____________________________________________________________________________page_links       len: {len(page_links)}")
         print(f"______________________________________________________page_links: {page_links}")
-        images_links = images_scrapper(driver, vin)
+        # images_links = images_scrapper(driver, vin)
+        images_links = [{'vin': '1hd1kef14mb640278', 'image_link': 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fplc.ua%2Fauctions%2Flot%2Fharley-davidson-fl-2021-vin-1hd1kef14mb640278-1-64968443%2F&psig=AOvVaw0UWKeNtcXwHqgEYspThrJQ&ust=1700610464115000&source=images&cd=vfe&opi=89978449&ved=2ahUKEwjFkJjm4dOCAxWXhaQKHVl_DFMQr4kDegQIARBm'}]
+
         print(f"_____________________________________________________________________________image_links      len: {len(images_links)}")
         print(f"______________________________________________________image_links: {images_links}")
         # block_pages_request(driver, page_links)
-        # block_images_request(driver, images_links)
+        block_images_request(driver, images_links)
         back_to_all_results(driver)
 
 

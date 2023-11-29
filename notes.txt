@@ -80,3 +80,5 @@ XPath   //*[@id="yDmH0d"]/c-wiz/div[2]/div[2]/div/div[2]/div/div/div/div/button/
     {'image_link': 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fimages.bid.cars%2F36811802_652e50a298133%2F2015-Volvo-XC60-YV426MDB4F2590434-8.jpg&tbnid=MuW2YlxDgMVZAM&vet=12ahUKEwi_v421q76CAxVg3wIHHeCID_QQMygGegQIARA_..i&imgrefurl=https%3A%2F%2Fbid.cars%2Fen%2Flot%2F0-36811802%2F2015-Volvo-XC60-YV426MDB4F2590434&docid=97S-4EN-cWx6RM&w=640&h=466&q=YV426MDB4F2590434&hl=pl&ved=2ahUKEwi_v421q76CAxVg3wIHHeCID_QQMygGegQIARA_', 'vin': 'YV426MDB4F2590434'
 ]
 [{'link': 'https://ucars.pro/ar/lot/133089086-2019-volvo-xc40-t5-momentum-yv4162xz7k2021323', 'vin': 'YV4162XZ7K2021323'}]
+
+

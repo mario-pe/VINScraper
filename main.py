@@ -28,7 +28,8 @@ from locators import (
     page_exists_block_address_xpath,
     image_tab_xpath,
     google_image_link_link_input_id,
-    google_image_link_radio_button_id, images_tab_xpath, request_send_correctly,
+    google_image_link_radio_button_id, images_tab_xpath, request_send_correctly, google_image_link_radio_button_label,
+    image_url_input,
 )
 
 BLUE_VIN = "2C3CDZBT5LH210515"
@@ -45,11 +46,16 @@ IMAGES_LINKS = []
 #     "1hd1kef14mb640278",
 #     "1hd1jnv10eb023434",
 # ]
+
 VINS = [
-    "1hd1kef14mb640278"
+
+ # '5UX83DP01N9L98571',
+ # 'YV426MDB4F2590434',
+ # '2C4RC1EG7JR237439',
+ # '3FA6P0HD1JR222549',
+ # 'JM1GL1VMXM1604596',
+# '5FNRL6H81PB062756',
 ]
-
-
 def load_vins():
     workbook = openpyxl.load_workbook(FILE_PATH)
     sheet = workbook.active
@@ -80,13 +86,22 @@ def login(driver):
 
 
 def first_search(driver):
-    try:
-        search_textarea = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.TAG_NAME, "textarea"))
-        search_textarea.send_keys("Dodge Challenger")
-        search_textarea.submit()
-    except Exception as e:
-        ipdb.set_trace()
-        logging.error(e)
+    search_textarea = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.TAG_NAME, "textarea"))
+    search_textarea.send_keys("Dodge Challenger")
+    search_textarea.submit()
+
+def back_to_all_results(driver):
+    driver.execute_script("window.scrollTo(0, 0);")
+    sleep(0.5)
+    driver.find_element(By.XPATH, all_results_xpath).click()
+
+def new_search(driver, vin):
+    import ipdb; ipdb.set_trace()
+    driver.get("https://www.google.com")
+    search_textarea = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.TAG_NAME, "textarea"))
+    search_textarea.send_keys(vin)
+    search_textarea.submit()
+
 
 def links_scrapper(driver, vin):
     links = []
@@ -167,10 +182,9 @@ def block_pages_request(driver, links):
         input_block_address = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, input_block_address_xpath))
         input_block_address.send_keys(link["link"])
         # input_block_address.send_keys(link)  # zły link do odtworzenia sytuacji i zabezpieczenia NoSuchElementException
-        import ipdb; ipdb.set_trace()
         driver.find_element(By.XPATH, button_send_block).click()
         try:
-            page_exists_block_address_button = WebDriverWait(driver, 1).until(lambda d: d.find_element(By.XPATH, page_exists_block_address_xpath))
+            page_exists_block_address_button = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, page_exists_block_address_xpath))
             page_exists_block_address_button.send_keys(link["vin"])
         except Exception:
             pass
@@ -183,7 +197,7 @@ def block_pages_request(driver, links):
         sleep(0.5)
         try:
             sleep(1)
-            request_send_correctly_button = WebDriverWait(driver, 1).until(lambda d: d.find_element(By.XPATH, request_send_correctly))
+            request_send_correctly_button = WebDriverWait(driver, 5).until(lambda d: d.find_element(By.XPATH, request_send_correctly))
             request_send_correctly_button.click()
         except Exception as e:
             print(f"Exception  --------------------- block_pages_request")
@@ -198,22 +212,28 @@ def block_images_request(driver, links):
     # driver.find_element(By.XPATH, button_new_block_request_xpath).click()
         for link in links:
             print(link["image_link"], link["vin"])
-            # driver.get(
-            #     "https://search.google.com/search-console/remove-outdated-content"
-            # )
             driver.get(REMOVE_CONTENT_URL)
-            import ipdb;
-            ipdb.set_trace()
             button_new_block_request_element = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, button_new_block_request_xpath))
             button_new_block_request_element.click()
-
-            image_tab_element = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, image_tab_xpath))
-            image_tab_element.click()
-            google_image_link_radio_button_element = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.ID, google_image_link_radio_button_id))
-            google_image_link_radio_button_element.click()
-            input_block_image = driver.find_element(By.ID, google_image_link_link_input_id)
-
-            print(f" link zdjecia  -----------   {link['image_link']}")
+            try:
+                image_tab_element = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, image_tab_xpath))
+                image_tab_element.click()
+            except Exception:
+                import ipdb; ipdb.set_trace()
+                image_tab_element = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, image_tab_xpath))
+                image_tab_element.click()
+            try:
+                google_image_link_radio_button_element = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.ID, google_image_link_radio_button_id))
+                google_image_link_radio_button_element.click()
+            except Exception as e:
+                import ipdb; ipdb.set_trace()
+                google_image_link_radio_button_label = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, "//input[@placeholder='Wklej URL skopiowany za pomocą opcji „Kopiuj adres linku” w wynikach wyszukiwania grafiki']"))
+                google_image_link_radio_button_label.click()
+            try:
+                input_block_image = driver.find_element(By.ID, google_image_link_link_input_id)
+            except Exception as e:
+                import ipdb; ipdb.set_trace()
+                input_block_image = driver.find_element(By.XPATH, "/html/body/div[7]/div[2]/div/div[1]/div/div/div[3]/span/label[2]/div[2]/label/input")
             input_block_image.send_keys(link["image_link"])
             driver.find_element(By.XPATH, button_send_block).click()
             try:
@@ -223,13 +243,17 @@ def block_images_request(driver, links):
                 request_send_correctly_button.click()
             except Exception:
                 pass
+
             try:
                 page_exists_block_address_button = WebDriverWait(driver, 3).until(
                     lambda d: d.find_element(By.XPATH, page_exists_block_address_xpath))
                 page_exists_block_address_button.send_keys(link["vin"])
             except Exception as e:
                 print(f"Exception  --------------------- block_images_request")
-                driver.find_element(By.XPATH, '//span[text()="Prześlij prośbę"]').click()
+                try:
+                    driver.find_element(By.XPATH, '//span[text()="Prześlij prośbę"]').click()
+                except Exception:
+                    pass
                 try:
                     request_send_correctly_button = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, request_send_correctly))
                     request_send_correctly_button.click()
@@ -238,16 +262,9 @@ def block_images_request(driver, links):
                 continue
 
 
+il = [
+]
 
-def back_to_all_results(driver):
-    try:
-        driver.execute_script("window.scrollTo(0, 0);")
-        sleep(0.5)
-        driver.find_element(By.XPATH, all_results_xpath).click()
-    except Exception:
-        import ipdb
-
-        ipdb.set_trace()
 
 
 if __name__ == "__main__":
@@ -258,18 +275,19 @@ if __name__ == "__main__":
     first_search(driver)
 
     for vin in VINS:
+        new_search(driver, vin)
         print(f"______________________________________________________vin: {vin}")
         page_links = links_scrapper(driver, vin)
         print(f"_____________________________________________________________________________page_links       len: {len(page_links)}")
         print(f"______________________________________________________page_links: {page_links}")
-        # images_links = images_scrapper(driver, vin)
-        images_links = [{'vin': '1hd1kef14mb640278', 'image_link': 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fplc.ua%2Fauctions%2Flot%2Fharley-davidson-fl-2021-vin-1hd1kef14mb640278-1-64968443%2F&psig=AOvVaw0UWKeNtcXwHqgEYspThrJQ&ust=1700610464115000&source=images&cd=vfe&opi=89978449&ved=2ahUKEwjFkJjm4dOCAxWXhaQKHVl_DFMQr4kDegQIARBm'}]
-
+        images_links = images_scrapper(driver, vin)
         print(f"_____________________________________________________________________________image_links      len: {len(images_links)}")
         print(f"______________________________________________________image_links: {images_links}")
-        # block_pages_request(driver, page_links)
-        block_images_request(driver, images_links)
-        back_to_all_results(driver)
+        if page_links:
+            block_pages_request(driver, page_links)
+        if images_links:
+            block_images_request(driver, images_links)
+        # block_images_request(driver, il)
 
 
 

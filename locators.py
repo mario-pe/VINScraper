@@ -16,6 +16,7 @@ all_results_xpath = '//a[text()="Wszystko"]'
 
 #block request
 button_new_block_request_xpath = '//span[text()="Nowa prośba"]'
+button_next_block_request_xpath = '//span[text()="Następne"]'
 input_block_address_xpath = "//input[@placeholder='Wpisz URL strony']"
 
 

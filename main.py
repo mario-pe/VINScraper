@@ -29,7 +29,7 @@ from locators import (
     image_tab_xpath,
     google_image_link_link_input_id,
     google_image_link_radio_button_id, images_tab_xpath, request_send_correctly, google_image_link_radio_button_label,
-    image_url_input,
+    image_url_input, button_next_block_request_xpath,
 )
 
 BLUE_VIN = "2C3CDZBT5LH210515"
@@ -48,13 +48,12 @@ IMAGES_LINKS = []
 # ]
 
 VINS = [
-    # "LYV102RKXKB263123",
-    # "1FA6P8CF6K5186661",
-    # "1C4RJFBG6KC841906",
-    "YV426MDB4F2590434",
-    "YV4162XZ7K2021323",
-    "1C4RJFBGXMC701005",
-    "1C4RJFBG4JC273945",
+    # 'WBA5B3C5XGG252684',
+    # 'WAUAUGFF4H1050030',
+    # 'WAUP4AF56NA031487',
+    # '1C6RR7LT0JS335316',
+    # '1C4RJFCG5FC846700',
+    '2C4RC1L75MR580970',
 ]
 def load_vins():
     workbook = openpyxl.load_workbook(FILE_PATH)
@@ -174,18 +173,24 @@ def images_scrapper(driver, vin):
     [print({"vin": vin, " image_link ": l}) for l in links]
     return [{"vin": vin, "image_link": l} for l in links]
 
+def open_new_request_form(driver):
+    driver.get(REMOVE_CONTENT_URL)
+    button_new_block_request_element = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, button_new_block_request_xpath))
+    button_new_block_request_element.click()
+    button_next_block_request_element = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, button_next_block_request_xpath))
+    button_next_block_request_element.click()
+
 
 
 def block_pages_request(driver, links):
     for link in links:
         print(link["link"], link["vin"])
-        driver.get(REMOVE_CONTENT_URL)
-        button_new_block_request_element = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, button_new_block_request_xpath))
-        button_new_block_request_element.click()
+        open_new_request_form(driver)
         input_block_address = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, input_block_address_xpath))
         input_block_address.send_keys(link["link"])
         # input_block_address.send_keys(link)  # zły link do odtworzenia sytuacji i zabezpieczenia NoSuchElementException
         driver.find_element(By.XPATH, button_send_block).click()
+        # import ipdb; ipdb.set_trace()
         try:
             page_exists_block_address_button = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, page_exists_block_address_xpath))
             page_exists_block_address_button.send_keys(link["vin"])
@@ -212,10 +217,8 @@ def block_images_request(driver, links):
     # driver.find_element(By.XPATH, button_new_block_request_xpath).click()
         for link in links:
             print(link["image_link"], link["vin"])
-            driver.get(REMOVE_CONTENT_URL)
             inputs = []
-            button_new_block_request_element = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, button_new_block_request_xpath))
-            button_new_block_request_element.click()
+            open_new_request_form(driver)
             try:
                 image_tab_element = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, image_tab_xpath))
                 image_tab_element.click()
@@ -236,6 +239,12 @@ def block_images_request(driver, links):
                 print(f'---- {link["image_link"]}  ------   {link["vin"]} --------')
 
             driver.find_element(By.XPATH, button_send_block).click()
+            try:
+                request_send_correctly_button = WebDriverWait(driver, 3).until(
+                    lambda d: d.find_element(By.XPATH, request_send_correctly))
+                request_send_correctly_button.click()
+            except Exception:
+                pass
             try:
                 sleep(1)
                 request_send_correctly_button = WebDriverWait(driver, 2).until(
@@ -271,6 +280,8 @@ if __name__ == "__main__":
     driver = init_driver()
     login(driver)
     # first_search(driver)
+    page_links = []
+    images_links = []
 
     for vin in VINS:
         new_search(driver, vin)

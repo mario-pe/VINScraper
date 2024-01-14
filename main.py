@@ -1,7 +1,4 @@
-
-import ipdb
 import openpyxl
-import logging
 from prompt_toolkit.mouse_events import MouseButton
 from selenium import webdriver
 import undetected_chromedriver as uc
@@ -12,7 +9,7 @@ from selenium.webdriver import ActionChains, Keys
 from selenium.webdriver.support.wait import WebDriverWait
 from time import sleep
 
-from config import username, password, FILE_PATH, REMOVE_CONTENT_URL
+from config import username, password, FILE_PATH, REMOVE_CONTENT_URL, DRIVER_PATH
 from locators import (
     google_approval_button,
     login_button,
@@ -47,13 +44,23 @@ IMAGES_LINKS = []
 #     "1hd1jnv10eb023434",
 # ]
 
+#16.11.2023
 VINS = [
-    'WBA5B3C5XGG252684',
-    'WAUAUGFF4H1050030',
-    'WAUP4AF56NA031487',
-    '1C6RR7LT0JS335316',
-    '1C4RJFCG5FC846700',
-    '2C4RC1L75MR580970',
+    # 'WAUC4CF57JA057553',
+    # 'WA1BNAFY7J2209278',
+    # '4FMUS18168R001926',
+    # 'SAJBD4BV4HCY40534',
+    # '1C6SRFHT3MN563477',
+    # '1C6SRFHT6NN111766',
+    # '3CZRU6H16MM748096',
+    # 'WDCTG4EB8JJ417348',
+    # 'YV4A22PL4K1480175',
+    # 'YV4AC2HKXM2513227',
+    # 'WBXJG9C03N5V49513',
+    'WAUTNAF57JA025820',
+    'WF0DP3TH1G4114251',
+    'W1N0G6EB9LF803456',
+    '1C6SRFU95MN819712',
 ]
 def load_vins():
     workbook = openpyxl.load_workbook(FILE_PATH)
@@ -63,7 +70,8 @@ def load_vins():
 
 
 def init_driver():
-    return uc.Chrome()
+    # import ipdb;ipdb.set_trace()
+    return uc.Chrome(executable_path=DRIVER_PATH)
 
 def login(driver):
     try:
@@ -197,25 +205,29 @@ def block_pages_request(driver, links):
         # input_block_address.send_keys(link)  # zły link do odtworzenia sytuacji i zabezpieczenia NoSuchElementException
         driver.find_element(By.XPATH, button_send_block).click()
         try:
-            print("1 block_pages_request TRY")
+            print("3 block_pages_request TRY--- OK")
+            WebDriverWait(driver, 5).until(lambda d: d.find_element(By.XPATH, request_send_correctly)).click()
+            print("3 block_pages_request TRY--- OK - DONE")
+            sleep(2)
+            continue
+        except Exception as e:
+            print(f"3 block_pages_request Exception  --- OK ---- bad sign")
+        try:
+            print("1 block_pages_request TRY - VIN")
             WebDriverWait(driver, 15).until(lambda d: d.find_element(By.XPATH, page_exists_block_address_span))
             driver.find_elements(By.XPATH, "//input")[0].send_keys(link["vin"])
             WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, button_send_block_request)).click()
         except Exception:
-            print("1 block_pages_request Exception")
+            print("1 block_pages_request Exception - VIN")
             pass
         try:
-            print("2 block_pages_request TRY")
+            print("2 block_pages_request TRY - Prześlij prośbę ")
             WebDriverWait(driver, 5).until(lambda d: d.find_element(By.XPATH, button_send_block_request)).click()
+            print("2 block_pages_request TRY - Prześlij prośbę -- DDNE")
         except Exception:
-            print("2 block_pages_request Exception")
+            print("2 block_pages_request Exception- Prześlij prośbę ")
             pass
-        try:
-            print("3 block_pages_request TRY")
-            WebDriverWait(driver, 5).until(lambda d: d.find_element(By.XPATH, request_send_correctly)).click()
-        except Exception as e:
-            print("3 block_pages_request Exception")
-            continue
+
 
 
 def block_images_request(driver, links):
@@ -225,19 +237,25 @@ def block_images_request(driver, links):
             inputs = []
             open_new_request_form(driver)
             try:
-                image_tab_element = WebDriverWait(driver, 5).until(lambda d: d.find_element(By.XPATH, image_tab_xpath))
+                sleep(0.5)
+                image_tab_element = WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, image_tab_xpath))
                 image_tab_element.click()
             except Exception:
-                for i in range(100):
-                    try:
-                        locator = f"/html/body/div[{i}]/div[2]/div/div[1]/div/div/div[1]/div/div/span/button[2]/span[3]"
-                        print(locator)
-                        driver.find_element(By.XPATH, locator).click()
-                        break
-                    except Exception:
-                        continue
-                # open_new_request_form(driver)
-                # aa = WebDriverWait(driver, 5).until(lambda d: d.find_element(By.XPATH, '//span[text()="Grafika"]'))   # alternatywa ?
+                open_new_request_form(driver)
+                try:
+                    sleep(0.5)
+                    WebDriverWait(driver, 10).until(lambda d: d.find_element(By.XPATH, image_tab_xpath)).click()
+                except Exception:
+                    for i in range(100):
+                        try:
+                            locator = f"/html/body/div[{i}]/div[2]/div/div[1]/div/div/div[1]/div/div/span/button[2]/span[3]"
+                            driver.find_element(By.XPATH, locator).click()
+                            break
+                        except Exception:
+                            print("--------------------------------------------------------------------------------------")
+                            print("----------------------------------------------- TAB GRAFIKA - Exception---------------")
+                            print("--------------------------------------------------------------------------------------")
+                            continue
             try:
                 inputs = driver.find_elements(By.XPATH, "//input")
                 inputs[4].click()
@@ -253,31 +271,42 @@ def block_images_request(driver, links):
 
             driver.find_element(By.XPATH, button_send_block).click()
             try:
-                print("1 request_send_correctly TRY")
+                print("1 pop-up  TRY  --- OK ")
                 request_send_correctly_button = WebDriverWait(driver, 6).until(lambda d: d.find_element(By.XPATH, request_send_correctly))
                 request_send_correctly_button.click()
+                print("1 pop-up  TRY  --- OK click")
             except Exception:
-                print("1 request_send_correctly Exception")
+                print("1 request_send_correctly Exception  --- OK-  nie wystąpiło")
                 pass
             try:
-                print("3 passed_address_span TRY")
+                print("2 button_send_block_request TRY - Prześlij prośbę")
+                WebDriverWait(driver, 3).until(lambda d: d.find_element(By.XPATH, button_send_block_request)).click()
+            except:
+                print("2 button_send_block_request Exception - Prześlij prośbę -  nie wystąpiło")
+                pass
+
+            try:
+                print("3 passed_address_span TRY - Prześlij prośbę VIN")
+
                 WebDriverWait(driver, 5).until(lambda d: d.find_element(By.XPATH, passed_address_span))
                 driver.find_elements(By.XPATH, "//input")[0].send_keys(link["vin"])
                 WebDriverWait(driver, 2).until(lambda d: d.find_element(By.XPATH, button_send_block_request)).click()
+                print("3 passed_address_span TRY - Prześlij prośbę VIN")
+            #     spradzić czy łatwo da się zidentyfikować który pop-up wyskoczył
             except Exception as e:
-                print("3 passed_address_span Exception")
+                print("3 passed_address_span Exception - Prześlij prośbę ")
                 try:
-                    print("4 button_send_block_request TRY")
                     WebDriverWait(driver, 4).until(lambda d: d.find_element(By.XPATH, button_send_block_request)).click()
+                    print("4 button_send_block_request TRY - Prześlij prośbę")
                 except Exception:
-                    print("4 button_send_block_request Exception")
+                    print("4 button_send_block_request Exception - Prześlij prośbę -  nie wystąpiło")
                     pass
                 try:
-                    print("5 request_send_correctly TRY")
                     request_send_correctly_button = WebDriverWait(driver, 3).until(lambda d: d.find_element(By.XPATH, request_send_correctly))
                     request_send_correctly_button.click()
+                    print("5 request_send_correctly TRY --- OK")
                 except Exception:
-                    print("5 request_send_correctly Exception")
+                    print("5 request_send_correctly Exception --- OK")
                     pass
                 continue
 
@@ -298,11 +327,11 @@ if __name__ == "__main__":
 
     for vin in VINS:
         new_search(driver, vin)
-        print(f"______________________________________________________vin: {vin}")
+        # print(f"______________________________________________________vin: {vin}")
         page_links = links_scrapper(driver, vin)
-        print(f"_____________________________________________________________________________page_links       len: {len(page_links)}")
+        # print(f"_____________________________________________________________________________page_links       len: {len(page_links)}")
         images_links = images_scrapper(driver, vin)
-        print(f"___________________________________________________________________________images_links       len: {len(images_links)}")
+        # print(f"___________________________________________________________________________images_links       len: {len(images_links)}")
         if page_links:
             block_pages_request(driver, page_links)
         if images_links:
